@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>HTML5 Video Puzzle</title>
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+    <meta name="author" content="Joshua Shammay" />
+    <script type="text/javascript" src="js/jquery-1.7.2.min.js"></script>
+    <script type="text/javascript" src="js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/CanvasVidPuzzle.js"></script>
+	<link rel="stylesheet" type="text/css" href="css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="css/CanvasVidPuzzle.css" />
+</head>
+
+<body>
+
+<div id="vidPuzzleNavbar" class="navbar">
+	<div class="navbar-inner">
+		<div class="container">
+			<ul class="nav">
+				<li class="dropdown active">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+						<span id="lblVid">Betty Boop: Minnie The Moocher</span> <b class="caret"></b>
+					</a>
+					<ul class="dropdown-menu">
+						<li><a class="ctrlSrc" data-vidsrc="videos/BettyBoopMTM_320x240" href="#">Betty Boop: Minnie The Moocher</a></li>
+						<li><a class="ctrlSrc" data-vidsrc="videos/PopeyeBMD_320x240" href="#">Popeye The Sailor: Blow Me Down</a></li>
+						<li><a class="ctrlSrc" data-vidsrc="videos/WoodyWoodpeckerPP_320x240" href="#">Woody Woodpecker: Pantry Panic</a></li>
+					</ul>
+				</li>
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+						<span id="lblDiff">Medium</span> <b class="caret"></b>
+					</a>
+					<ul class="dropdown-menu">
+						<li><a class="ctrlDiff" href="#">Easy</a></li>
+						<li><a class="ctrlDiff" href="#">Medium</a></li>
+						<li><a class="ctrlDiff" href="#">Hard</a></li>
+					</ul>
+				</li>
+				<li><a id="ctrlScramble" href="#">Scramble</a></li>
+				<li><a id="ctrlPause" href="#">Pause</a></li>
+				<li><a id="ctrlSolve" href="#">Solve</a></li>
+
+			</ul>
+			<ul class="nav pull-right">
+				<li class="dropdown">
+					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
+						Sound (<span id="lblVol">mute</span>) <b class="caret"></b>
+					</a>
+					<ul class="dropdown-menu">
+						<li><a data-vol="0" class="ctrlVol" href="#">mute</a></li>
+						<li><a data-vol="1" class="ctrlVol" href="#">10%</a></li>
+						<li><a data-vol="2" class="ctrlVol" href="#">20%</a></li>
+						<li><a data-vol="3" class="ctrlVol" href="#">30%</a></li>
+						<li><a data-vol="4" class="ctrlVol" href="#">40%</a></li>
+						<li><a data-vol="5" class="ctrlVol" href="#">50%</a></li>
+						<li><a data-vol="6" class="ctrlVol" href="#">60%</a></li>
+						<li><a data-vol="7" class="ctrlVol" href="#">70%</a></li>
+						<li><a data-vol="8" class="ctrlVol" href="#">80%</a></li>
+						<li><a data-vol="9" class="ctrlVol" href="#">90%</a></li>
+						<li><a data-vol="10" class="ctrlVol" href="#">100%</a></li>
+					</ul>
+				</li>
+				<li class="divider-vertical"></li>
+				<li><a id="ctrlHelp" href="#">?</a></li>
+			</ul>
+		</div>
+	</div>
+</div>
+
+<div id="vidDiv" class="hide">
+    <video id="sourceVid" autoplay="autoplay" loop="loop" src=""></video>
+</div>
+
+<div id="mainDiv" class="center">
+    <canvas id="outputLayer"></canvas>
+</div>
+
+<div class="modal hide" id="help">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal">×</button>
+		<h3>HTML5 Video Puzzle</h3>
+	</div>
+	<div class="modal-body">
+		A humble internet project by Joshua Shammay [<a href="mailto:josh@purplejelly.org">e</a>]
+		<br>
+		Because videos and puzzles are what the internet is about!
+		<br><br>
+		<b>Instructions: Click and drag tiles to move them, blue tile border disappears on being placed in correct position.</b>
+		<br><br>
+		Videos are (to the best of my knowledge) in the public domain, and were obtained from the <a href="http://archive.org/">Internet Archive</a>
+		<br><br>
+		<a href="http://archive.org/details/bb_minnie_the_moocher">Betty Boop: Minnie The Moocher</a><br>
+		<a href="http://archive.org/details/Popeye_In_Blow_Me_Down">Popeye The Sailor: Blow Me Down</a><br>
+		<a href="http://archive.org/details/woody_woodpecker_pantry_panic">Woody Woodpecker: Pantry Panic</a><br>
+		<br>
+		Initial inspiration came from Sean Christmann's excellent
+		<a href="http://www.chromeexperiments.com/detail/destructive-video/">Destructive Video Experiment</a>
+		(<a href="http://www.craftymind.com/2010/04/20/blowing-up-html5-video-and-mapping-it-into-3d-space/">alt1</a>)
+		(<a href="http://craftymind.com/factory/html5video/CanvasVideo.html">alt2</a>)
+
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="btn btn-primary" data-dismiss="modal">Close</a>
+	</div>
+</div>
+
+</body>
+</html>

@@ -1,0 +1,17 @@
+body{
+	margin:0;
+	background-color: #C6C6C6;
+}
+
+#outputLayer{
+	background-color: white;
+	border: solid 5px #666666;
+}
+
+#vidPuzzleNavbar{
+	min-width: 710px;
+}
+
+.center {
+	text-align: center;
+}
