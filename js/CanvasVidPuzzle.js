@@ -325,6 +325,8 @@ $(function () {
 
 	$('#sourceVid').on('loadedmetadata', function(){
 		setupPage(puzzle);
+		$('#loadingDiv').hide();
+		$('#outputLayer').show();
 	});
 
 	$('#sourceVid').attr('src', puzzle.DEFAULT_VID + puzzle.FILE_EXT);

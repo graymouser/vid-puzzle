@@ -3,9 +3,20 @@ body{
 	background-color: #C6C6C6;
 }
 
-#outputLayer{
+#outputLayer,#loadingDiv{
 	background-color: white;
 	border: solid 5px #666666;
+}
+
+#loadingDiv {
+	width: 310px;
+	height: 160px;
+	margin-left: auto;
+	margin-right: auto;
+}
+
+#loadingDiv img{
+	margin-top: 60px;
 }
 
 #vidPuzzleNavbar{
