@@ -29,7 +29,7 @@
 				</li>
 				<li class="dropdown">
 					<a href="#" class="dropdown-toggle" data-toggle="dropdown">
-						<span id="lblDiff">Medium</span> <b class="caret"></b>
+						<span id="lblDiff">Easy</span> <b class="caret"></b>
 					</a>
 					<ul class="dropdown-menu">
 						<li><a class="ctrlDiff" href="#">Easy</a></li>
@@ -72,6 +72,17 @@
     <video id="sourceVid" autoplay="autoplay" loop="loop" src=""></video>
 </div>
 
+<div id="scoreDivOuter" class="hide" >
+	<div id="scoreDivInner" class="alert alert-success">
+		<!--<a class="close" data-dismiss="alert" href="#">×</a>-->
+		<h4 class="alert-heading">Congratulations!</h4>
+		You solved the <span id="solveVid" class="bold"></span>
+		puzzle on <span id="solveMode" class="bold"></span> mode
+		in <span id="solveTime" class="bold"></span>
+		<span id="solveAddendum"></span>
+	</div>
+</div>
+
 <div id="mainDiv" class="center">
     <canvas id="outputLayer" class="hide"></canvas>
 	<div id="loadingDiv">
@@ -89,7 +100,7 @@
 		<br>
 		Because videos and puzzles are what the internet is about!
 		<br><br>
-		<b>Instructions: Click and drag tiles to move them, blue tile border disappears on being placed in correct position.</b>
+		<b>Instructions: Click and drag tiles to move them, tile border disappears on being placed in correct position.</b>
 		<br><br>
 		The source for this project can be viewed at <a href="https://github.com/graymouser/vid-puzzle">github.com/graymouser/vid-puzzle</a>
 		<br><br>

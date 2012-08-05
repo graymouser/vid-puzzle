@@ -8,6 +8,15 @@ body{
 	border: solid 5px #666666;
 }
 
+#scoreDivOuter {
+	margin: -10px 0 10px 0;
+}
+
+#scoreDivInner {
+	width: 500px;
+	margin: 0 auto;
+}
+
 #loadingDiv {
 	width: 310px;
 	height: 160px;
@@ -21,6 +30,10 @@ body{
 
 #vidPuzzleNavbar{
 	min-width: 710px;
+}
+
+.bold {
+	font-weight: bold;
 }
 
 .center {

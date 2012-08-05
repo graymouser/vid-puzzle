@@ -6,7 +6,7 @@
  * To change this template use File | Settings | File Templates.
  */
 
-var Dimensions = function(w, h) {
+var Dimensions = function (w, h) {
 	this.width = w;
 	this.height = h;
 };
@@ -42,22 +42,20 @@ Tile.prototype.inchToOrigin = function (range) {
 	if (Math.abs(this.current.x - this.origin.x) < range) this.current.x = this.origin.x;
 	else if (this.current.x < this.origin.x) this.current.x += range;
 	else this.current.x -= range;
-	
+
 	if (Math.abs(this.current.y - this.origin.y) < range) this.current.y = this.origin.y;
 	else if (this.current.y < this.origin.y) this.current.y += range;
 	else this.current.y -= range;
 };
 
-Tile.prototype.isPointInside = function(x, y) {
+Tile.prototype.isPointInside = function (x, y) {
 	return (!(
 		x < this.current.x ||
-		y < this.current.y ||
-		x > (this.current.x + this.width) ||
-		y > (this.current.y + this.height)
-	));
+			y < this.current.y ||
+			x > (this.current.x + this.width) ||
+			y > (this.current.y + this.height)
+		));
 };
-
-
 
 var Puzzle = function () {
 	this.curVid = 0;
@@ -65,14 +63,13 @@ var Puzzle = function () {
 	this.solving = false;
 	this.paused = 0;
 	this.video = null;
-	this.moveOffset = new Point(0,0);
+	this.moveOffset = new Point(0, 0);
 
 	var v = document.createElement('video');
 
 	if (v.canPlayType('video/webm') != '') this.FILE_EXT = '.webm';
 	else if (v.canPlayType('video/mp4') != '') this.FILE_EXT = '.mp4';
 	else this.FILE_EXT = '.ogv';
-	console.log(this.FILE_EXT);
 
 	this.DEFAULT_VID = "videos/BettyBoopMTM_320x240";
 
@@ -86,7 +83,7 @@ var Puzzle = function () {
 	this.TILE_DIM_MEDIUM = new Dimensions(40, 40);
 	this.TILE_DIM_HARD = new Dimensions(32, 32);
 
-	this.TILE_DIM = this.TILE_DIM_MEDIUM;
+	this.TILE_DIM = this.TILE_DIM_EASY;
 
 	this.playArea = new Rectangle();
 	this.vidArea = new Rectangle();
@@ -96,6 +93,9 @@ var Puzzle = function () {
 	this.canvasObject = null;
 	this.canvas = null;
 
+	this.startTime = null;
+	this.solveTime = null;
+	this.cheater = false;
 	this.tiles = [];
 };
 
@@ -104,7 +104,7 @@ Puzzle.prototype.init = function () {
 
 	this.video.volume = 0;
 	this.video.muted = true;
-	
+
 	this.canvasObject = $("#outputLayer");
 
 	this.playArea.width = this.video.videoWidth * 2;
@@ -112,22 +112,22 @@ Puzzle.prototype.init = function () {
 
 	this.vidArea.width = this.video.videoWidth;
 	this.vidArea.height = this.video.videoHeight;
-	this.vidArea.x = (this.playArea.width - this.vidArea.width)/2;
-	this.vidArea.y = (this.playArea.height - this.vidArea.height)/2;
+	this.vidArea.x = (this.playArea.width - this.vidArea.width) / 2;
+	this.vidArea.y = (this.playArea.height - this.vidArea.height) / 2;
 
 	this.canvasObject.attr({
-		width: 	this.playArea.width,
-		height: this.playArea.height
+		width:this.playArea.width,
+		height:this.playArea.height
 	}).css({
-		width: 	this.playArea.width + 'px',
-		height: this.playArea.height + 'px'
-	});
+			width:this.playArea.width + 'px',
+			height:this.playArea.height + 'px'
+		});
 	this.canvas = this.canvasObject[0].getContext('2d');
 
 	$('<canvas>').attr({
-		id: 'vidCopyCanvas',
-		width: 	this.playArea.width,
-		height: this.playArea.height
+		id:'vidCopyCanvas',
+		width:this.playArea.width,
+		height:this.playArea.height
 	}).appendTo('#vidDiv');
 	this.vidCopyCanvasObject = $("#vidCopyCanvas")[0];
 	this.vidCopyCanvas = this.vidCopyCanvasObject.getContext('2d');
@@ -136,16 +136,22 @@ Puzzle.prototype.init = function () {
 	this.scrambleTiles();
 };
 
-Puzzle.prototype.bringTileToFront = function(tileIndex) {
+Puzzle.prototype.resetTimer = function () {
+	this.startTime = (new Date()).getTime();
+	this.cheater = false;
+	$("#scoreDivOuter").hide();
+};
+
+Puzzle.prototype.bringTileToFront = function (tileIndex) {
 	var tile = this.tiles[tileIndex];
 	this.tiles.splice(tileIndex, 1);
 	this.tiles.push(tile);
 };
 
-Puzzle.prototype.pickTile = function(e){
+Puzzle.prototype.pickTile = function (e) {
 	if (this.paused) return false;
 
-	var maxI = this.tiles.length-1;
+	var maxI = this.tiles.length - 1;
 	var canvasX = e.pageX - this.canvasObject[0].offsetLeft;
 	var canvasY = e.pageY - this.canvasObject[0].offsetTop;
 
@@ -158,17 +164,17 @@ Puzzle.prototype.pickTile = function(e){
 			break;
 		}
 	}
-	
+
 	if (this.selTile >= 0) {
 		this.bringTileToFront(this.selTile);
 		this.selTile = maxI;
 	}
-	
+
 	this.canvasObject.css('cursor', 'pointer');
 	return false;
 };
 
-Puzzle.prototype.moveTile = function(e) {
+Puzzle.prototype.moveTile = function (e) {
 	if (this.selTile < 0) return false;
 	var tile = this.tiles[this.selTile];
 	tile.current.x = e.pageX - this.canvasObject[0].offsetLeft - this.moveOffset.x;
@@ -176,7 +182,7 @@ Puzzle.prototype.moveTile = function(e) {
 	return false;
 };
 
-Puzzle.prototype.dropTile = function(e) {
+Puzzle.prototype.dropTile = function (e) {
 	this.selTile = -1;
 	this.canvasObject.css('cursor', 'default');
 	return false;
@@ -207,11 +213,13 @@ Puzzle.prototype.scrambleTiles = function () {
 		this.tiles[i].current.x = randomX;
 		this.tiles[i].current.y = randomY;
 	}
+	this.resetTimer();
 	return false;
 };
 
-Puzzle.prototype.solve = function() {
+Puzzle.prototype.solve = function () {
 	this.solving = true;
+	this.cheater = true;
 	return false;
 };
 
@@ -222,10 +230,10 @@ Puzzle.prototype.processFrame = function () {
 
 	//snapshot current video fame to intermediary canvas
 	//NOTE: significant jitter reduction by using intermediary canvas
-	this.vidCopyCanvas.drawImage(this.video,0,0, this.vidArea.width, this.vidArea.height,
-	this.vidArea.x, this.vidArea.y, this.vidArea.width, this.vidArea.height);
+	this.vidCopyCanvas.drawImage(this.video, 0, 0, this.vidArea.width, this.vidArea.height,
+		this.vidArea.x, this.vidArea.y, this.vidArea.width, this.vidArea.height);
 
-	this.canvas.clearRect(0,0,this.playArea.width, this.playArea.height);
+	this.canvas.clearRect(0, 0, this.playArea.width, this.playArea.height);
 
 	this.canvas.lineWidth = 1;
 	this.canvas.strokeStyle = this.COLOR_VID;
@@ -251,44 +259,95 @@ Puzzle.prototype.processFrame = function () {
 			tile.current.x, tile.current.y, this.TILE_DIM.width, this.TILE_DIM.height
 		);
 	}
-	
-	if (this.solving && solved) this.solving = false;
+
+	if (solved) {
+		this.solving = false;
+		if (this.solveTime == null) this.solveTime = (new Date()).getTime();
+
+		if (!$("#scoreDivOuter").is(":visible")) {
+			this.showSolveMessage();
+		}
+	}
+
 };
 
-Puzzle.prototype.changeDifficulty = function(diffControl) {
+Puzzle.prototype.showSolveMessage = function() {
+	solveTimeDT = new Date(Math.abs(this.solveTime - this.startTime));
+	solveTimeSTR = "";
+
+	if (solveTimeDT.getUTCHours() > 0) {
+		solveTimeSTR += solveTimeDT.getUTCHours() + 'h ';
+	}
+
+	if (solveTimeDT.getUTCMinutes() > 0) {
+		solveTimeSTR += solveTimeDT.getUTCMinutes() + 'm ';
+	}
+
+	if (solveTimeDT.getUTCSeconds() > 0) {
+		solveTimeSTR += solveTimeDT.getUTCSeconds() + 's ';
+	}
+
+	solveTimeSTR += '!';
+
+	$("#solveTime").html(solveTimeSTR);
+
+	var modeStr = $("#lblDiff").html().toUpperCase();
+	$("#solveMode").html(modeStr);
+	$("#solveVid").html($("#lblVid").html().split(':')[0]);
+
+	if (this.cheater) {
+		$("#solveAddendum").html("... by <span class='bold'>CHEATING!</span>");
+	} else if (modeStr == "EASY") {
+		$("#solveAddendum").html("<br>Why not try <span class='bold'>MEDIUM</span> mode? It's harder than <span class='bold'>EASY</span>, but not as hard as <span class='bold'>HARD</span>.");
+	} else if (modeStr == "MEDIUM") {
+		$("#solveAddendum").html("<br>Doing pretty well, how about a spin in <span class='bold'>HARD</span> mode?");
+	} else {
+		$("#solveAddendum").html("Well I'm impressed.");
+	}
+
+	$("#scoreDivOuter").slideDown();
+};
+
+Puzzle.prototype.changeDifficulty = function (diffControl) {
 	var diffLvl = $(diffControl).html();
 	if (diffLvl == "Easy") this.TILE_DIM = this.TILE_DIM_EASY;
 	else if (diffLvl == "Medium") this.TILE_DIM = this.TILE_DIM_MEDIUM;
 	else this.TILE_DIM = this.TILE_DIM_HARD;
+
 	this.createTiles();
 	this.scrambleTiles();
 	$('#lblDiff').html(diffLvl);
+
+	this.resetTimer();
 };
 
-Puzzle.prototype.changeVolume = function(volControl){
+Puzzle.prototype.changeVolume = function (volControl) {
 	var v = $(volControl).data('vol');
 	this.video.muted = (v == 0);
-	this.video.volume = (v/10.0);
+	this.video.volume = (v / 10.0);
 	$('#lblVol').html($(volControl).html());
 };
 
-Puzzle.prototype.changeVid = function(srcControl) {
-	this.video.src = $(srcControl).data('vidsrc')+this.FILE_EXT;
+Puzzle.prototype.changeVid = function (srcControl) {
+	this.video.src = $(srcControl).data('vidsrc') + this.FILE_EXT;
 	$('#lblVid').html($(srcControl).html());
+
+	this.scrambleTiles();
+	this.resetTimer();
 };
 
-Puzzle.prototype.pause = function() {
+Puzzle.prototype.pause = function () {
 	this.paused++;
 	this.video.pause();
 };
 
-Puzzle.prototype.play = function() {
+Puzzle.prototype.play = function () {
 	this.paused--;
 	if (!this.paused) this.video.play();
 };
 
-Puzzle.prototype.togglePause = function(pauseControl) {
-	if($(pauseControl).html() == "Pause") {
+Puzzle.prototype.togglePause = function (pauseControl) {
+	if ($(pauseControl).html() == "Pause") {
 		this.pause();
 		$(pauseControl).html('Play');
 	} else {
@@ -301,29 +360,58 @@ Puzzle.prototype.togglePause = function(pauseControl) {
 function setupPage(p) {
 	p.init();
 
-	p.canvasObject.mousedown(function(e){return p.pickTile(e);});
-	p.canvasObject.mousemove(function(e){return p.moveTile(e);});
-	p.canvasObject.mouseup(function(e){return p.dropTile(e);});
+	p.canvasObject.mousedown(function (e) {
+		return p.pickTile(e);
+	});
+	p.canvasObject.mousemove(function (e) {
+		return p.moveTile(e);
+	});
+	p.canvasObject.mouseup(function (e) {
+		return p.dropTile(e);
+	});
 
-	$('.ctrlSrc').click(function(){p.changeVid(this);});
-	$('.ctrlDiff').click(function(){p.changeDifficulty(this);});
-	$('#ctrlScramble').click(function(){return p.scrambleTiles();});
-	$('#ctrlPause').click(function(){return p.togglePause(this);});
-	$('#ctrlSolve').click(function(){return p.solve();});
-	$('.ctrlVol').click(function(){p.changeVolume(this);});
-	$('#ctrlHelp').click(function(){$('#help').modal();});
-	$('#help').on('show', function(){p.pause();})
-		.on('hidden', function(){p.play();});
+	$('.ctrlSrc').click(function () {
+		p.changeVid(this);
+	});
+	$('.ctrlDiff').click(function () {
+		p.changeDifficulty(this);
+	});
+	$('#ctrlScramble').click(function () {
+		return p.scrambleTiles();
+	});
+	$('#ctrlPause').click(function () {
+		return p.togglePause(this);
+	});
+	$('#ctrlSolve').click(function () {
+		return p.solve();
+	});
+	$('.ctrlVol').click(function () {
+		p.changeVolume(this);
+	});
+	$('#ctrlHelp').click(function () {
+		$('#help').modal();
+	});
 
-	setInterval(function(){p.processFrame();}, 33);
+	$('#help').on('show', function () {
+		p.pause();
+	})
+		.on('hidden', function () {
+			p.play();
+		});
+
+	setInterval(function () {
+		p.processFrame();
+	}, 33);
 
 	$('#sourceVid').off('loadedmetadata');
+
+	p.resetTimer();
 }
 
 $(function () {
 	var puzzle = new Puzzle();
 
-	$('#sourceVid').on('loadedmetadata', function(){
+	$('#sourceVid').on('loadedmetadata', function () {
 		setupPage(puzzle);
 		$('#loadingDiv').hide();
 		$('#outputLayer').show();
