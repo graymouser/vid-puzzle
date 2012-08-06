@@ -137,7 +137,8 @@ Puzzle.prototype.init = function () {
 };
 
 Puzzle.prototype.resetTimer = function () {
-	this.startTime = (new Date()).getTime();
+	this.startTime = new Date();
+	this.solveTime = null;
 	this.cheater = false;
 	$("#scoreDivOuter").hide();
 };
@@ -262,7 +263,7 @@ Puzzle.prototype.processFrame = function () {
 
 	if (solved) {
 		this.solving = false;
-		if (this.solveTime == null) this.solveTime = (new Date()).getTime();
+		if (this.solveTime == null) this.solveTime = new Date();
 
 		if (!$("#scoreDivOuter").is(":visible")) {
 			this.showSolveMessage();
@@ -271,21 +272,21 @@ Puzzle.prototype.processFrame = function () {
 
 };
 
-Puzzle.prototype.showSolveMessage = function() {
-	solveTimeDT = new Date(Math.abs(this.solveTime - this.startTime));
+Puzzle.prototype.showSolveMessage = function () {
 	solveTimeSTR = "";
 
-	if (solveTimeDT.getUTCHours() > 0) {
-		solveTimeSTR += solveTimeDT.getUTCHours() + 'h ';
-	}
+	var diffMs = (this.solveTime - this.startTime); // milliseconds between start and solve
+	var diffDays = Math.round(diffMs / 86400000); // days
+	var diffHrs = Math.round((diffMs % 86400000) / 3600000); // hours
+	var diffMins = Math.round(((diffMs % 86400000) % 3600000) / 60000); // minutes
+	var diffSecs = Math.round((((diffMs % 86400000) % 3600000) % 60000) / 1000); // seconds
 
-	if (solveTimeDT.getUTCMinutes() > 0) {
-		solveTimeSTR += solveTimeDT.getUTCMinutes() + 'm ';
-	}
+	console.log('ms:' + diffMs);
 
-	if (solveTimeDT.getUTCSeconds() > 0) {
-		solveTimeSTR += solveTimeDT.getUTCSeconds() + 's ';
-	}
+	if (diffDays) solveTimeSTR += diffDays + 'd ';
+	if (diffHrs) solveTimeSTR += diffHrs + 'h ';
+	if (diffMins) solveTimeSTR += diffMins + 'm ';
+	if (diffSecs) solveTimeSTR += diffSecs + 's ';
 
 	solveTimeSTR += '!';
 
@@ -317,8 +318,6 @@ Puzzle.prototype.changeDifficulty = function (diffControl) {
 	this.createTiles();
 	this.scrambleTiles();
 	$('#lblDiff').html(diffLvl);
-
-	this.resetTimer();
 };
 
 Puzzle.prototype.changeVolume = function (volControl) {
@@ -333,7 +332,6 @@ Puzzle.prototype.changeVid = function (srcControl) {
 	$('#lblVid').html($(srcControl).html());
 
 	this.scrambleTiles();
-	this.resetTimer();
 };
 
 Puzzle.prototype.pause = function () {
